@@ -116,21 +116,25 @@ void MSOpenH264Encoder::initialize()
 			params.uiMaxNalSize = ms_factory_get_payload_max_size(mFilter->factory);
 			params.iMultipleThreadIdc =ms_factory_get_cpu_count(mFilter->factory);
 			params.bEnableDenoise = false;
-			params.bEnableBackgroundDetection = true;
-			params.bEnableAdaptiveQuant = true;
+            params.bEnableBackgroundDetection = false;
+			params.bEnableAdaptiveQuant = false;
 			params.bEnableSceneChangeDetect = false;
 			params.bEnableLongTermReference  = false;
 			params.iSpatialLayerNum=1;
 			params.eSpsPpsIdStrategy = CONSTANT_ID;
-			
-			params.sSpatialLayers[0].iVideoWidth = mVConf.vsize.width;
-			params.sSpatialLayers[0].iVideoHeight = mVConf.vsize.height;
+            params.iComplexityMode = LOW_COMPLEXITY;
+            
+            params.sSpatialLayers[0].uiProfileIdc = PRO_BASELINE;
+            params.sSpatialLayers[0].uiLevelIdc = LEVEL_1_0;
+            params.sSpatialLayers[0].iDLayerQp = 20; //SVC_QUALITY_BASE_QP - 6;
+            params.sSpatialLayers[0].iVideoWidth = mVConf.vsize.width;
+            params.sSpatialLayers[0].iVideoHeight = mVConf.vsize.height;
 			params.sSpatialLayers[0].fFrameRate = mVConf.fps;
 			params.sSpatialLayers[0].iSpatialBitrate = targetBitrate;
 			params.sSpatialLayers[0].iMaxSpatialBitrate = maxBitrate;
 			params.sSpatialLayers[0].sSliceCfg.uiSliceMode = SM_DYN_SLICE;
 			params.sSpatialLayers[0].sSliceCfg.sSliceArgument.uiSliceSizeConstraint = ms_factory_get_payload_max_size(mFilter->factory);
-
+            
 			ret = mEncoder->InitializeExt(&params);
 			if (ret != 0) {
 				ms_error("OpenH264 encoder: Failed to initialize: %d", ret);
